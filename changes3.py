@@ -48,9 +48,9 @@ pygame.init()
 clock=pygame.time.Clock()
 bird_move=0 
 game_sprites={}
-
+GAME_FONT = pygame.font.SysFont('Comic Sans MS', 20)
 gravity=0.25
-
+color = (200, 000, 000)
 #Create pygame window
 screen=pygame.display.set_mode((565, 690))
 
@@ -110,6 +110,7 @@ game_active=True
 isstarted = False
 isalive=False
 scorectr=0
+flag=0
 while True:
     for event in pygame.event.get():
         if event.type==pygame.QUIT or(event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE):
@@ -125,22 +126,29 @@ while True:
             if event.key==pygame.K_SPACE and not isstarted:
                 isstarted=True
                 isalive=True
-        if event.type==pygame.KEYDOWN :
-                if event.key==pygame.K_SPACE and isstarted and isalive:
-                    bird_move=0
-                    bird_move-=9
-                    flap_sound.play()
+            if event.key==pygame.K_SPACE and isstarted and isalive:
+                bird_move=0
+                bird_move-=9
+                flap_sound.play()
+            elif event.key==pygame.K_TAB and not isalive:
+                #print("restar")
+                isalive=True
+                game_active=True
+                scorectr=0
+                    
 
     #print(pipe_list)
     screen.blit(background, (0,0))
-    if pipe_list!=[]:
+    if pipe_list!=[] and isstarted and isalive:
         for i in pipe_list:
-        
-            if i[0]<-100:
+            flag=1
+            if i[0]<0:
                 pipe_list.pop(pipe_list.index(i))
-                
-                    
-                scorectr=int(scorectr/2)
+                scorectr=scorectr+1
+        else:
+            if flag:
+                flag=0
+                #print(scorectr//2)#deception
         
 
              
@@ -149,7 +157,8 @@ while True:
 
         bird_move+=gravity
         bird_rect.centery +=bird_move #to detect any collision around the bird
-    
+        text=GAME_FONT.render(str(scorectr//2), True,color)
+        screen.blit(text, (282,345))
 
         #draw pipes
         pipe_list=move_pipes(pipe_list)
@@ -165,7 +174,7 @@ while True:
         pipe_list.clear()
         game_activate=True
     screen.blit(bird,bird_rect)
-    print(scorectr )
+    #print(scorectr )
 
 
     #create floor
